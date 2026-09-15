@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDIO_ADMIN
+  CLIENT
+}
+
+enum ProjectStatus {
+  ACTIVE
+  IN_REVIEW
+  COMPLETED
+}
+
+enum MilestoneStatus {
+  UPCOMING
+  IN_PROGRESS
+  PENDING_APPROVAL
+  APPROVED
+}
+
+enum PinStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  OVERDUE
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String   // e.g., "Orbit Studio"
+  slug      String   @unique
+  logoUrl   String?
+  createdAt DateTime @default(now())
+
+  users     User[]
+  projects  Project[]
+}
+
+model User {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  name           String
+  role           Role          @default(CLIENT)
+  avatarUrl      String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  comments       PinComment[]
+}
+
+model Project {
+  id             String        @id @default(uuid())
+  name           String
+  clientName     String
+  clientEmail    String
+  clientToken    String        @unique @default(uuid()) // Magic workspace access token
+  status         ProjectStatus @default(ACTIVE)
+  budgetInCents  Int           @default(0)
+  spentInCents   Int           @default(0)
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  startDate      DateTime      @default(now())
+  targetEndDate  DateTime
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  milestones     Milestone[]
+  assets         Asset[]
+  retainers      Retainer[]
+  invoices       Invoice[]
+}
+
+model Milestone {
+  id          String          @id @default(uuid())
+  projectId   String
+  project     Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  dueDate     DateTime
+  status      MilestoneStatus @default(UPCOMING)
+  signedAt    DateTime?
+  signedBy    String?
+}
+
+model Asset {
+  id            String   @id @default(uuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title         String
+  versionNumber Int      @default(1)
+  imageUrl      String
+  width         Int      @default(1920)
+  height        Int      @default(1080)
+  createdAt     DateTime @default(now())
+
+  pins          CanvasPin[]
+}
+
+model CanvasPin {
+  id        String    @id @default(uuid())
+  assetId   String
+  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  xPercent  Float     // 0-100 percentage relative to canvas width
+  yPercent  Float     // 0-100 percentage relative to canvas height
+  title     String
+  status    PinStatus @default(OPEN)
+  createdAt DateTime  @default(now())
+
+  comments  PinComment[]
+}
+
+model PinComment {
+  id        String    @id @default(uuid())
+  pinId     String
+  pin       CanvasPin @relation(fields: [pinId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id])
+  content   String
+  createdAt DateTime  @default(now())
+}
+
+model Retainer {
+  id            String   @id @default(uuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  totalHours    Float
+  usedHours     Float    @default(0)
+  hourlyRate    Int      // rate in cents
+  cycleStart    DateTime
+  cycleEnd      DateTime
+  createdAt     DateTime @default(now())
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNum    String        @unique
+  projectId     String
+  project       Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  amountInCents Int
+  status        InvoiceStatus @default(DRAFT)
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime
+  stripeId      String?
+  createdAt     DateTime      @default(now())
+}
