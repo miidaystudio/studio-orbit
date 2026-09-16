@@ -3,191 +3,266 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-interface ProjectCard {
+interface ProjectDeliverable {
   id: string;
-  title: string;
-  clientName: string;
-  clientToken: string;
-  status: 'Active' | 'In Review' | 'Completed';
-  budgetFormatted: string;
-  spentFormatted: string;
-  percentageSpent: number;
+  client: string;
+  name: string;
+  tagline: string;
+  badgeToken: string;
+  status: 'ACTIVE' | 'IN REVIEW' | 'COMPLETED';
+  spentInCents: number;
+  budgetInCents: number;
+  token: string;
   assetId: string;
+  pendingPinsCount?: number;
+  featured?: boolean;
 }
 
-export default function ProjectsOverviewPage() {
-  const [showModal, setShowModal] = useState(false);
+export default function ModernProductivityProjectsCockpitPage() {
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
-  const projects: ProjectCard[] = [
+  const deliverables: ProjectDeliverable[] = [
     {
       id: 'proj-1',
-      title: 'Lumina Brand Identity & Portal System',
-      clientName: 'Lumina Tech',
-      clientToken: 'lumina-portal-token-9988',
-      status: 'Active',
-      budgetFormatted: '$35,000',
-      spentFormatted: '$18,500',
-      percentageSpent: 53,
+      client: 'Lumina Tech',
+      name: 'Lumina Brand & Portal System',
+      tagline: 'Tactile design architectures, kinetic viewport telemetry, and bespoke design systems.',
+      badgeToken: 'DEV-SYSTEM-01',
+      status: 'ACTIVE',
+      spentInCents: 1850000,
+      budgetInCents: 3500000,
+      token: 'lumina-portal-token-9988',
       assetId: 'asset-99',
+      pendingPinsCount: 3,
+      featured: true, // Violet gradient featured block
     },
     {
       id: 'proj-2',
-      title: 'Aether Mobile App Redesign',
-      clientName: 'Aether Labs',
-      clientToken: 'aether-portal-token-1122',
-      status: 'In Review',
-      budgetFormatted: '$50,000',
-      spentFormatted: '$42,000',
-      percentageSpent: 84,
+      client: 'Aether Labs',
+      name: 'Aether Mobile App Redesign',
+      tagline: 'Kinetic scroll physics, gesture navigation, and real-time viewport coordinate pins.',
+      badgeToken: 'DESIGN-QA-02',
+      status: 'IN REVIEW',
+      spentInCents: 4200000,
+      budgetInCents: 5000000,
+      token: 'aether-portal-token-1122',
       assetId: 'asset-88',
+      pendingPinsCount: 1,
     },
     {
       id: 'proj-3',
-      title: 'Kinesis E-Commerce System',
-      clientName: 'Kinesis Co',
-      clientToken: 'kinesis-portal-token-3344',
-      status: 'Completed',
-      budgetFormatted: '$28,000',
-      spentFormatted: '$28,000',
-      percentageSpent: 100,
+      client: 'Kinesis Co',
+      name: 'Kinesis E-Commerce System',
+      tagline: 'Custom Stripe billing workflows & automated retainer burn-down ledger.',
+      badgeToken: 'FINANCE-03',
+      status: 'COMPLETED',
+      spentInCents: 2800000,
+      budgetInCents: 2800000,
+      token: 'kinesis-portal-token-3344',
       assetId: 'asset-77',
+      pendingPinsCount: 0,
     },
   ];
 
+  const handleCopyMagicLink = (token: string) => {
+    const url = `${window.location.origin}/portal/${token}`;
+    navigator.clipboard.writeText(url);
+    setCopiedToken(token);
+    setTimeout(() => setCopiedToken(null), 2500);
+  };
+
+  const formatCurrency = (cents: number) => {
+    return `$${(cents / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="max-w-7xl mx-auto py-2 space-y-10 selection:bg-[#6366F1] selection:text-white">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-[#E5E2DA] pb-6">
-        <div>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#C85A32]">Cockpit</span>
-          <h1 className="text-3xl font-serif font-bold text-[#121212] mt-1">Active Projects</h1>
-          <p className="text-sm text-[#686661] mt-1">
-            Studio deliverable roadmaps, budget burn rates, and coordinate-pinned review canvases.
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-black/[0.06]">
+        <div className="max-w-2xl space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 text-[11px] font-mono font-medium tracking-wide">
+            <span className="w-2 h-2 rounded-full bg-[#6366F1] animate-pulse" />
+            COCKPIT • ACTIVE DELIVERABLES
+          </div>
+
+          <h1 className="text-4xl lg:text-5xl font-sans font-bold tracking-tight text-[#0F172A] leading-[1.08]">
+            Active <span className="font-serif italic font-normal text-[#6366F1]">Deliverables.</span>
+          </h1>
+
+          <p className="text-sm text-[#64748B] max-w-xl leading-relaxed">
+            Real-time staging telemetry, visual coordinate QA, and digital milestone sign-offs.
           </p>
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-5 py-2.5 bg-[#121212] hover:bg-[#2A241B] text-white text-xs font-semibold uppercase tracking-wider rounded-xl shadow-editorial transition"
-        >
-          + New Project
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/staging"
+            className="px-4 py-2.5 rounded-full bg-white border border-black/[0.08] hover:bg-black/[0.02] text-xs font-medium text-[#0F172A] transition-all shadow-sm flex items-center gap-2"
+          >
+            <span>Staging QA</span>
+            <span className="font-serif italic text-sm">↗</span>
+          </Link>
+          <button
+            type="button"
+            className="px-5 py-2.5 rounded-full bg-[#0F172A] hover:bg-[#6366F1] text-white text-xs font-medium transition-all shadow-sm active:scale-95"
+          >
+            + New Deliverable
+          </button>
+        </div>
       </div>
 
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {projects.map((p) => (
-          <div
-            key={p.id}
-            className="bg-white border border-[#E5E2DA] rounded-2xl p-6 shadow-editorial hover:border-[#C85A32] transition flex flex-col justify-between"
-          >
-            <div>
-              {/* Header Badges */}
-              <div className="flex justify-between items-start mb-3">
-                <span className="text-xs font-mono font-semibold text-[#686661] uppercase tracking-wider">
-                  {p.clientName}
-                </span>
-                <span
-                  className={`text-[10px] uppercase font-mono px-2.5 py-0.5 rounded-full font-semibold border ${
-                    p.status === 'Active'
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      : p.status === 'In Review'
-                      ? 'bg-amber-50 text-amber-800 border-amber-200'
-                      : 'bg-neutral-100 text-neutral-700 border-neutral-300'
-                  }`}
-                >
-                  {p.status}
-                </span>
+      {/* Deliverables Bento Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {deliverables.map((item) => {
+          const progressPercent = Math.min(100, Math.round((item.spentInCents / item.budgetInCents) * 100));
+
+          if (item.featured) {
+            // Vibrant Candy Violet Featured Card (#6366F1 -> #4F46E5)
+            return (
+              <div
+                key={item.id}
+                className="bg-gradient-to-br from-[#6366F1] to-[#4F46E5] text-white rounded-3xl p-8 flex flex-col justify-between shadow-[0_20px_40px_-15px_rgba(99,102,241,0.25)] relative overflow-hidden group border border-indigo-400/30"
+              >
+                {/* Soft ambient background glow */}
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="space-y-6 relative z-10">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono tracking-wider text-white/80 uppercase">
+                      {item.client}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-md border border-white/20">
+                      ● {item.status}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-white/70 block">
+                      [{item.badgeToken}]
+                    </span>
+                    <h3 className="text-3xl font-sans font-bold leading-tight tracking-tight">
+                      {item.name}
+                    </h3>
+                  </div>
+
+                  <p className="text-xs text-white/85 leading-relaxed font-sans">
+                    {item.tagline}
+                  </p>
+
+                  {/* Live Pending QA Pins Badge */}
+                  {(item.pendingPinsCount ?? 0) > 0 && (
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/20 text-[10px] font-mono text-white border border-white/20 backdrop-blur-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
+                      [{item.pendingPinsCount}] Pins Pending Review
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-white/20 space-y-4 relative z-10">
+                  <div className="flex justify-between text-xs font-mono text-white/90">
+                    <span>Retainer Burndown</span>
+                    <span>{progressPercent}%</span>
+                  </div>
+
+                  {/* Pure White Burn Progress Bar */}
+                  <div className="w-full h-2.5 bg-black/20 rounded-full overflow-hidden p-0.5">
+                    <div
+                      className="h-full bg-white rounded-full transition-all duration-700"
+                      style={{ width: `${progressPercent}%` }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      onClick={() => handleCopyMagicLink(item.token)}
+                      className="text-xs font-mono uppercase tracking-wider text-white/90 hover:text-white underline underline-offset-4 transition"
+                    >
+                      {copiedToken === item.token ? '✓ Copied!' : 'Copy Magic Link'}
+                    </button>
+
+                    <Link
+                      href={`/portal/${item.token}/canvas/${item.assetId}`}
+                      className="w-10 h-10 rounded-full bg-white text-[#6366F1] flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 transition-transform"
+                    >
+                      ↗
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          // Pure White Porcelain Bento Cards (#FFFFFF on #F7F7F9)
+          return (
+            <div
+              key={item.id}
+              className="bg-white border border-black/[0.06] rounded-3xl p-8 flex flex-col justify-between shadow-[0_20px_40px_-15px_rgba(15,23,42,0.06)] hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group"
+            >
+              <div className="space-y-5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#64748B]">
+                    {item.client}
+                  </span>
+                  <span
+                    className={`text-[10px] font-mono px-3 py-1 rounded-full font-semibold border ${
+                      item.status === 'IN REVIEW'
+                        ? 'bg-rose-50 text-rose-600 border-rose-100'
+                        : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#94A3B8] block">
+                    [{item.badgeToken}]
+                  </span>
+                  <h3 className="text-2xl font-sans font-bold text-[#0F172A] group-hover:text-[#6366F1] transition-colors leading-tight tracking-tight">
+                    {item.name}
+                  </h3>
+                </div>
+
+                <p className="text-xs text-[#64748B] leading-relaxed font-sans">
+                  {item.tagline}
+                </p>
               </div>
 
-              {/* Title */}
-              <h2 className="text-xl font-serif font-bold text-[#121212] mb-6 leading-snug">{p.title}</h2>
-
-              {/* Budget Progress Meter */}
-              <div className="space-y-2 mb-6">
-                <div className="flex justify-between text-xs text-[#686661] font-mono">
-                  <span>Spent: <strong className="text-[#121212]">{p.spentFormatted}</strong></span>
-                  <span>Cap: <strong className="text-[#121212]">{p.budgetFormatted}</strong></span>
+              <div className="mt-8 pt-6 border-t border-black/[0.06] space-y-4">
+                <div className="flex justify-between text-xs font-mono text-[#64748B]">
+                  <span>Burned</span>
+                  <span className="font-semibold text-[#0F172A]">{progressPercent}%</span>
                 </div>
-                <div className="h-2 w-full bg-[#F9F8F3] border border-[#E5E2DA] rounded-full overflow-hidden">
+
+                <div className="w-full h-2.5 bg-[#F7F7F9] rounded-full overflow-hidden p-0.5 border border-black/[0.04]">
                   <div
-                    style={{ width: `${p.percentageSpent}%` }}
-                    className={`h-full transition-all duration-500 ${
-                      p.percentageSpent >= 100
-                        ? 'bg-neutral-800'
-                        : p.percentageSpent > 75
-                        ? 'bg-amber-600'
-                        : 'bg-[#C85A32]'
-                    }`}
+                    className="h-full bg-[#0F172A] rounded-full transition-all duration-700"
+                    style={{ width: `${progressPercent}%` }}
                   />
                 </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <button
+                    onClick={() => handleCopyMagicLink(item.token)}
+                    className="text-xs font-mono uppercase tracking-wider text-[#64748B] hover:text-[#0F172A] transition"
+                  >
+                    {copiedToken === item.token ? '✓ Copied!' : 'Copy Magic Link'}
+                  </button>
+
+                  <Link
+                    href={`/portal/${item.token}`}
+                    className="w-9 h-9 rounded-full border border-black/[0.08] bg-[#F7F7F9] text-[#0F172A] flex items-center justify-center font-bold text-xs group-hover:bg-[#0F172A] group-hover:text-white transition-colors"
+                  >
+                    →
+                  </Link>
+                </div>
               </div>
             </div>
-
-            {/* Action Links */}
-            <div className="border-t border-[#E5E2DA] pt-4 flex justify-between items-center text-xs">
-              <Link
-                href={`/portal/${p.clientToken}`}
-                className="font-medium text-[#686661] hover:text-[#121212] transition"
-              >
-                Client Portal
-              </Link>
-              <Link
-                href={`/portal/${p.clientToken}/canvas/${p.assetId}`}
-                className="font-semibold text-[#C85A32] hover:underline"
-              >
-                Open Workspace →
-              </Link>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-
-      {/* New Project Modal Trigger */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 bg-[#121212]/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-[#E5E2DA] max-w-md w-full rounded-2xl p-6 shadow-canvas">
-            <h3 className="text-xl font-serif font-bold text-[#121212] mb-2">Create Studio Project</h3>
-            <p className="text-xs text-[#686661] mb-6">Instantly generates client magic token and visual review canvas.</p>
-            
-            <form onSubmit={(e) => { e.preventDefault(); setShowModal(false); }} className="space-y-4 text-xs">
-              <div>
-                <label className="block uppercase font-mono tracking-wider text-[#686661] mb-1">Project Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Lumina Brand Identity"
-                  className="w-full p-3 bg-[#F9F8F3] border border-[#E5E2DA] rounded-xl text-[#121212] focus:outline-none focus:border-[#C85A32]"
-                />
-              </div>
-              <div>
-                <label className="block uppercase font-mono tracking-wider text-[#686661] mb-1">Client Company Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Lumina Tech"
-                  className="w-full p-3 bg-[#F9F8F3] border border-[#E5E2DA] rounded-xl text-[#121212] focus:outline-none focus:border-[#C85A32]"
-                />
-              </div>
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#E5E2DA]">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-[#E5E2DA] text-[#686661] rounded-xl hover:bg-[#F9F8F3]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#121212] text-white rounded-xl font-semibold hover:bg-[#2A241B]"
-                >
-                  Create Project
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+
+

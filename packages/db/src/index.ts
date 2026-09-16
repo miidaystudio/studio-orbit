@@ -1,9 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+import * as schema from './schema';
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+const connectionString = process.env.DATABASE_URL || 'postgresql://orbit:orbit_password@localhost:5432/studio_orbit';
 
-export const prisma = globalForPrisma.prisma || new PrismaClient();
+const pool = new Pool({
+  connectionString,
+});
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
-
-export * from '@prisma/client';
+export const db = drizzle(pool, { schema });
+export * from './schema';

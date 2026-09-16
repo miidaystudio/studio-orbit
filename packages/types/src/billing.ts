@@ -1,13 +1,3 @@
-export interface RetainerSummary {
-  id: string;
-  projectId: string;
-  totalHours: number;
-  usedHours: number;
-  hourlyRateInCents: number;
-  cycleStart: string;
-  cycleEnd: string;
-}
-
 export type InvoiceStatus = 'DRAFT' | 'ISSUED' | 'PAID' | 'OVERDUE';
 
 export interface InvoiceLineItem {
@@ -30,4 +20,15 @@ export interface Invoice {
   subtotalInCents: number;
   taxInCents: number;
   totalInCents: number;
+  stripeUrl?: string;
+}
+
+export interface RetainerSummary {
+  id: string;
+  projectId: string;
+  totalHours: number;
+  usedHours: number;
+  hourlyRateInCents: number;
+  cycleStart: string;
+  cycleEnd: string;
 }

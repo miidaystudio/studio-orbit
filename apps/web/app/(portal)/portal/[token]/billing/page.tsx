@@ -21,7 +21,7 @@ export default async function ClientBillingPage({
       </header>
 
       {/* Retainer Burn-Down Gauge */}
-      <RetainerGauge totalHours={40} usedHours={24 font-bold} />
+      <RetainerGauge totalHours={40} usedHours={24} />
 
       {/* Invoice History */}
       <div className="bg-white border border-[#E9E2D3] rounded-2xl p-6 shadow-sm">

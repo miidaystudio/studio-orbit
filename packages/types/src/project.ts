@@ -12,32 +12,17 @@ export interface Milestone {
   signedBy?: string;
 }
 
-export interface Client {
-  id: string;
-  name: string;
-  companyName: string;
-  email: string;
-  clientToken: string;
-  avatarUrl?: string;
-}
-
 export interface Project {
   id: string;
   name: string;
   clientName: string;
   clientEmail: string;
   clientToken: string;
+  stagingUrl: string;
   status: ProjectStatus;
   budgetInCents: number;
   spentInCents: number;
   startDate: string;
   targetEndDate: string;
-  milestones: Milestone[];
-}
-
-export interface Organization {
-  id: string;
-  name: string;
-  slug: string;
-  logoUrl?: string;
+  milestones?: Milestone[];
 }

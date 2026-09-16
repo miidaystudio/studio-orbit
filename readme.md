@@ -1,16 +1,16 @@
 <div align="center">
 
-# 🪐 Studio-Orbit
+# 🪐 StudioOrbit
 
-**The high-end, editorial client portal and real-time review canvas monorepo for design & engineering studios.**
+**The open-source Design-to-Code Visual QA, Staging Review, and Client Approval Hub for design & engineering studios.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Next.js 15](https://img.shields.io/badge/Next.js-15%20App%20Router-black?logo=next.js)](https://nextjs.org/)
+[![Drizzle ORM](https://img.shields.io/badge/Drizzle-ORM-C5F74F?logo=drizzle)](https://orm.drizzle.team/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org/)
-[![Turborepo](https://img.shields.io/badge/Turborepo-Monorepo-ef4444?logo=turborepo)](https://turbo.build/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-Parchment%20Editorial-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-Parchment%20Theme-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 
-[Overview](#-overview) • [Architecture](#-architecture) • [Key Features](#-key-features) • [Directory Breakdown](#-directory-breakdown) • [Getting Started](#-getting-started) • [License](#-license)
+[Overview](#-overview) • [Key Features](#-key-features) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [License](#-license)
 
 </div>
 
@@ -18,124 +18,77 @@
 
 ## 🪐 Overview
 
-**Studio-Orbit** is an open-source, self-hostable client workspace monorepo. It bridges the gap between client communication, interactive coordinate-based visual review, and financial management for design & engineering studios.
-
-Instead of sending clients to rigid corporate spreadsheets or generic ticket trackers, Studio-Orbit provides an editorial, warm parchment-themed interface powered by Next.js 15, Turborepo, Prisma ORM, and a Node.js WebSocket service for real-time presence.
-
----
-
-## 🏗 Architecture
-
-Studio-Orbit is structured as a **Turborepo monorepo** divided into `apps` and `packages`:
-
-```
-studio-orbit/
-├── apps/
-│   ├── web/               # Next.js 15 (App Router) Studio Admin & Client Portal
-│   └── realtime/          # Node.js WebSocket service for live presence & canvas comments
-├── packages/
-│   ├── db/                # Prisma ORM Database layer & seed script
-│   ├── types/             # Shared TypeScript interfaces
-│   └── config/            # Shared Tailwind editorial parchment design tokens
-├── docker-compose.yml     # PostgreSQL + Redis services
-└── turbo.json             # Turborepo task pipeline
-```
+**StudioOrbit** is a self-hostable monorepo combining an **interactive Staging Viewport with DOM coordinate pins** (Figma-style QA defect tracking on live staging URL sandboxes) with a **Drizzle ORM PostgreSQL database layer** and an **editorial studio dashboard** (milestone scope sign-offs, Stripe invoice settlements, and retainer hour burn-downs).
 
 ---
 
 ## ✨ Key Features
 
-* **Coordinate-Pinned Review Canvas (`apps/web/components/canvas/`)**:
-  - Pan/zoom viewport with percentage-based coordinate math (`0-100%`).
-  - Animated pulse markers with status badges (`open`, `in_review`, `resolved`).
-  - Threaded comment drawer with role-based tags (`client` vs `studio`).
-  - Multi-version switcher (`v1`, `v2`, `v3`).
-* **Client Portal & Magic Links (`apps/web/app/(auth)/`)**:
-  - Zero-password login for clients via secure portal access tokens.
-  - Client overview, delivery roadmaps, and instant project status.
-* **Retainer & Invoice Ledger (`apps/web/components/billing/`)**:
-  - Visual burn-down gauge for prepaid agency hours.
-  - Printable PDF invoice generator with subtotal and tax breakdowns.
-* **Realtime Presence Engine (`apps/realtime/`)**:
-  - Node.js WebSocket server broadcasting viewer cursors and comment pins live.
+* **Visual QA & Staging Sandbox (`apps/web/components/staging/`)**:
+  - Interactive device frame sandbox supporting Desktop (`1440px`), Tablet (`768px`), and Mobile (`375px`) viewports.
+  - Zoom presets (`50%`, `75%`, `100%`, `Fit`).
+  - Transparent `DOMPinOverlay` mapping click relative percentages (`xPercent`, `yPercent`) and logging device resolution and browser user-agent.
+  - Marker status pills (Amber for Open, Emerald for Resolved).
+  - Inspection drawer with threaded discussions and a "Mark Resolved" action.
+* **GitHub Issue Bridge (`apps/web/app/api/github/sync/route.ts`)**:
+  - Export visual QA defect pins directly into GitHub Issues with markdown detailing coordinates, device viewport, user-agent, and comment history.
+* **Drizzle ORM Database Layer (`packages/db`)**:
+  - PostgreSQL schema (`src/schema.ts`) using `drizzle-orm` and `pg` for `projects`, `canvas_pins`, `pin_comments`, `milestones`, and `invoices`.
+* **Client Scope Governance (`components/scope/MilestoneSignOff.tsx`)**:
+  - Timestamped digital sign-off trigger preventing scope creep.
+* **Retainer & Invoicing Hub (`apps/web/app/(studio)/billing/page.tsx`)**:
+  - SVG circular burn-down gauge for consumed vs. allocated monthly hours and Stripe checkout ledger.
 
 ---
 
-## 📂 Complete Directory & File Breakdown
+## 🏗 Architecture
 
-For an in-depth breakdown explaining the purpose of every file and folder in this codebase, see [`STRUCTURE_EXPLANATION.md`](file:///c:/Users/miiday_repo_work/studio-orbit/STRUCTURE_EXPLANATION.md).
-
-| Path | Description |
-| :--- | :--- |
-| **`apps/web`** | **Next.js 15 App Router Frontend** |
-| `├── app/(auth)/portal/login/page.tsx` | Magic link passwordless authentication page |
-| `├── app/(dashboard)/` | Internal studio admin layout & navigation shell |
-| `│   ├── projects/page.tsx` | Studio project management & budget tracker |
-| `│   ├── invoices/page.tsx` | Stripe invoices & retainers ledger table |
-| `│   └── clients/page.tsx` | Client profiles & workspace portal token manager |
-| `├── app/(portal)/portal/[token]/` | Client-facing private workspace |
-| `│   ├── page.tsx` | Client overview & milestone roadmap |
-| `│   ├── canvas/[assetId]/page.tsx` | Full-screen interactive review canvas page |
-| `│   └── billing/page.tsx` | Client retainer gauge & billing history |
-| `├── app/api/webhooks/stripe/route.ts` | Stripe payment webhook listener |
-| `├── app/api/upload/route.ts` | Presigned URL generator for direct S3 / R2 asset uploads |
-| `├── components/canvas/` | `ReviewCanvas`, `FeedbackPin`, `PinCommentDrawer`, `VersionStack` |
-| `├── components/billing/` | `RetainerGauge`, `InvoicePDF` |
-| `└── components/milestones/` | `DeliveryRoadmap` |
-| **`apps/realtime`** | **Node.js WebSocket Service** |
-| `├── src/presence.ts` | Tracks live cursor locations & active room viewers |
-| `├── src/broadcaster.ts` | Pushes comment pins & cursor updates to all room participants |
-| `└── src/index.ts` | WebSocket server listening on port `8080` |
-| **`packages/db`** | **Prisma ORM Layer** |
-| `├── prisma/schema.prisma` | PostgreSQL database schema (User, Client, Project, Pin, Invoice) |
-| `├── prisma/seed.ts` | Realistic demo seed data for Studio Admin & Client |
-| `└── src/index.ts` | Global Prisma Client singleton |
-| **`packages/types`** | **Shared TypeScript Interfaces** |
-| `└── src/` | Shared types for canvas, project, milestone, and billing |
-| **`packages/config`** | **Shared Design Tokens** |
-| `└── tailwind/tailwind.config.js` | Parchment palette (`#FAF8F5`), Terracotta accent (`#C85A32`), & serif fonts |
+```
+studio-orbit/
+├── apps/
+│   ├── web/               # Next.js 15 App Router Frontend & Staging Visual QA
+│   └── realtime/          # Node.js WebSocket Service for live presence
+├── packages/
+│   ├── db/                # Drizzle ORM PostgreSQL schema & seed script
+│   ├── types/             # Shared TypeScript models
+│   └── config/            # Shared Tailwind editorial parchment design tokens
+├── docker-compose.yml     # PostgreSQL 16 + Redis 7 services
+└── turbo.json             # Turborepo task pipeline
+```
 
 ---
 
 ## 🚀 Getting Started
 
 ### 1. Install Dependencies
-Run from the workspace root:
-
 ```bash
 npm install
 ```
 
-### 2. Start PostgreSQL & Redis
-Launch local database containers via Docker:
-
+### 2. Start PostgreSQL & Redis (Docker)
 ```bash
 docker-compose up -d
 ```
 
-### 3. Setup Database & Seed Data
-
+### 3. Initialize Drizzle Database & Seed Data
 ```bash
-npm run db:generate
-npm run db:push
-npm run db:seed
+# Push Drizzle schema to PostgreSQL
+npm --prefix packages/db run db:push
+
+# Run Drizzle seed script
+npm --prefix packages/db run db:seed
 ```
 
-### 4. Start Development Servers
-
+### 4. Start Development Server
 ```bash
-# Start all apps concurrently via Turborepo
-npm run dev
-
-# Or start Next.js web portal individually:
 cd apps/web
 npm run dev
 ```
 
 Visit:
-- **Studio Cockpit**: `http://localhost:3000/projects`
-- **Client Portal**: `http://localhost:3000/portal/lumina-portal-token-9988`
-- **Review Canvas**: `http://localhost:3000/portal/lumina-portal-token-9988/canvas/asset-99`
+- **Projects Cockpit**: `http://localhost:3000/projects`
+- **Visual QA Staging**: `http://localhost:3000/staging`
+- **Retainer & Billing**: `http://localhost:3000/billing`
 
 ---
 

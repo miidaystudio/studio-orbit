@@ -1,26 +1,38 @@
 import './globals.css';
-import React from 'react';
+import { Plus_Jakarta_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google';
+
+const sansFont = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
+
+const serifFont = Instrument_Serif({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-serif',
+});
+
+const monoFont = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+});
 
 export const metadata = {
-  title: 'StudioOrbit | Editorial Client Portal & Review Canvas',
-  description: 'Editorial client portal, coordinate-pinned asset review canvas, and retainers ledger.',
+  title: 'StudioOrbit | Digital Productivity Cockpit & Review Canvas',
+  description: 'Visual QA staging, coordinate-pinned asset review canvas, and retainers ledger.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-      </head>
-      <body className="min-h-screen bg-[#F9F8F3] text-[#121212] antialiased">
+    <html
+      lang="en"
+      className={`${sansFont.variable} ${serifFont.variable} ${monoFont.variable}`}
+    >
+      <body className="bg-[#F7F7F9] text-[#0F172A] antialiased selection:bg-[#6366F1] selection:text-white font-sans">
         {children}
       </body>
     </html>
   );
 }
+
+
