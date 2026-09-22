@@ -20,6 +20,14 @@ const monoFont = JetBrains_Mono({
 export const metadata = {
   title: 'StudioOrbit | Digital Productivity Cockpit & Review Canvas',
   description: 'Visual QA staging, coordinate-pinned asset review canvas, and retainers ledger.',
+  icons: {
+    icon: [
+      { url: '/favicon.jpg', type: 'image/jpeg' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/favicon.jpg',
+    apple: '/favicon.jpg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -28,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${sansFont.variable} ${serifFont.variable} ${monoFont.variable}`}
     >
-      <body className="bg-[#F7F7F9] text-[#0F172A] antialiased selection:bg-[#6366F1] selection:text-white font-sans">
+      <body className="bg-[#08090A] text-[#FFFFFF] antialiased selection:bg-[#CCFF00] selection:text-black font-sans">
         {children}
       </body>
     </html>

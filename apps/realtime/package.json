@@ -2,6 +2,7 @@
   "name": "@studio-orbit/realtime",
   "version": "0.1.0",
   "private": true,
+  "type": "commonjs",
   "main": "src/index.ts",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

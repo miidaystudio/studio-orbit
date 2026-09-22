@@ -1,6 +1,7 @@
 {
   "name": "studio-orbit",
   "private": true,
+  "packageManager": "npm@10.8.2",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -14,10 +15,15 @@
     "db:seed": "turbo db:seed"
   },
   "devDependencies": {
+    "drizzle-kit": "^0.31.11",
     "turbo": "^2.0.0",
     "typescript": "^5.5.4"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.3",
+    "pg": "^8.23.0"
   }
 }

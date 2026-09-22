@@ -4,17 +4,42 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protected paths that require authentic studio session
-  const protectedRoutes = ['/projects', '/invoices', '/clients', '/staging'];
-  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
+  // Protected Studio Admin routes
+  const adminRoutes = ['/projects', '/overview', '/clients', '/staging', '/launch-brand', '/audit', '/brand', '/invoices'];
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
 
-  if (isProtectedRoute) {
+  // Portal routes
+  const isPortalRoute = pathname.startsWith('/portal');
+  const isInviteRoute = pathname.startsWith('/portal/invite');
+
+  if (isAdminRoute) {
     const sessionCookie = request.cookies.get('studio_session')?.value || request.cookies.get('studio_token')?.value;
+    const roleCookie = request.cookies.get('studio_role')?.value;
 
     if (!sessionCookie) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('from', pathname);
       return NextResponse.redirect(loginUrl);
+    }
+
+    // Role-based protection: CLIENT role cannot access STUDIO_ADMIN routes
+    if (roleCookie === 'CLIENT') {
+      const clientPortalToken = request.cookies.get('studio_portal_token')?.value || 'lumina-portal-token-9988';
+      const portalUrl = new URL(`/portal/${clientPortalToken}`, request.url);
+      return NextResponse.redirect(portalUrl);
+    }
+  }
+
+  // Handle client portal access
+  if (isPortalRoute && !isInviteRoute) {
+    const sessionCookie = request.cookies.get('studio_session')?.value || request.cookies.get('studio_token')?.value;
+    
+    if (!sessionCookie) {
+      // Allow magic token route access or redirect to invite onboarding
+      const portalToken = pathname.split('/')[2];
+      if (!portalToken) {
+        return NextResponse.redirect(new URL('/portal/invite', request.url));
+      }
     }
   }
 
@@ -23,13 +48,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (logo.png, etc)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|logo.png|icon.png).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|favicon\\.jpg|logo\\.jpg|logo\\.png|icon\\.png|.*\\.(?:jpg|jpeg|gif|png|svg|ico)).*)',
   ],
 };

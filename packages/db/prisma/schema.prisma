@@ -85,16 +85,26 @@ model Project {
   invoices       Invoice[]
 }
 
+enum ScopeType {
+  IN_SCOPE
+  OUT_OF_SCOPE
+}
+
 model Milestone {
-  id          String          @id @default(uuid())
-  projectId   String
-  project     Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  title       String
-  description String?
-  dueDate     DateTime
-  status      MilestoneStatus @default(UPCOMING)
-  signedAt    DateTime?
-  signedBy    String?
+  id                String          @id @default(uuid())
+  projectId         String
+  project           Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title             String
+  description       String?
+  dueDate           DateTime
+  status            MilestoneStatus @default(UPCOMING)
+  signedAt          DateTime?
+  signedBy          String?
+  signedByEmail     String?
+  auditHash         String?         // Tamper-evident SHA-256 sign-off digest
+  ipAddress         String?
+  snapshotUrl       String?
+  certificatePdfUrl String?
 }
 
 model Asset {
@@ -111,17 +121,90 @@ model Asset {
   pins          CanvasPin[]
 }
 
-model CanvasPin {
-  id        String    @id @default(uuid())
-  assetId   String
-  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
-  xPercent  Float     // 0-100 percentage relative to canvas width
-  yPercent  Float     // 0-100 percentage relative to canvas height
-  title     String
-  status    PinStatus @default(OPEN)
-  createdAt DateTime  @default(now())
+enum PinCategory {
+  BUG
+  CHANGE_REQUEST
+  COPY_CHANGE
+}
 
-  comments  PinComment[]
+enum ClientApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NOT_APPLICABLE
+}
+
+model MilestoneSignoff {
+  id              String    @id @default(uuid())
+  milestoneId     String
+  milestone       Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  clientEmail     String
+  clientIp        String
+  commitHashOrUrl String?
+  signedAt        DateTime  @default(now())
+  signatureName   String
+  auditHash       String
+  certificatePdfUrl String?
+}
+
+model AuditLedgerEvent {
+  id            String   @id @default(uuid())
+  retainerId    String?
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  eventType     String   // SCOPE_DEDUCTION | INVOICE_PAYMENT | HOUR_TOPUP | MANUAL_ADJUSTMENT
+  description   String
+  hoursDelta    Float
+  amountInCents Int?
+  createdAt     DateTime @default(now())
+}
+
+model CanvasPin {
+  id                  String               @id @default(uuid())
+  assetId             String
+  asset               Asset                @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  xPercent            Float                // 0-100 percentage relative to canvas width
+  yPercent            Float                // 0-100 percentage relative to canvas height
+  title               String
+  status              PinStatus            @default(OPEN)
+  
+  // Triage & Scope Firewall
+  pinCategory         PinCategory          @default(BUG)
+  billableHours       Float?
+  estimatedCostCents  Int?
+  clientApprovalStatus ClientApprovalStatus @default(NOT_APPLICABLE)
+
+  // Copy-Deck Sync
+  originalText        String?
+  updatedText         String?
+
+  // DOM Anchor & Viewport Attributes
+  selectorPath        String?              // Unique CSS Selector Path
+  targetOffsetX       Float?               // Relative offset X within target element (0-1)
+  targetOffsetY       Float?               // Relative offset Y within target element (0-1)
+  domSnippet          String?              // Snippet of inner text for re-anchor heuristic
+  viewportWidth       Int                  @default(1440)
+  viewportHeight      Int                  @default(900)
+  devicePixelRatio    Float                @default(1.0)
+  userAgent           String?
+  consoleLogs         String?              // Intercepted console errors/logs
+  reanchorStatus      String?              @default("ANCHORED")
+
+  // GitHub Bridge & Branch Tagging
+  githubIssueNumber   Int?
+  githubIssueUrl      String?
+  prNumber            Int?
+  previewUrl          String?
+
+  // Scope Defense & Retainer Tracking
+  scopeType           ScopeType            @default(IN_SCOPE)
+  estimatedHours      Float                @default(0.0)
+  estimatedCostInCents Int                 @default(0)
+  stripePaymentUrl    String?
+
+  createdAt           DateTime             @default(now())
+
+  comments            PinComment[]
 }
 
 model PinComment {
@@ -157,4 +240,42 @@ model Invoice {
   dueDate       DateTime
   stripeId      String?
   createdAt     DateTime      @default(now())
+}
+
+model SprintShowcase {
+  id                String    @id @default(uuid())
+  clientId          String
+  title             String
+  versionTag        String
+  stagingUrl        String
+  status            String    @default("IN_REVIEW") // DRAFT | IN_REVIEW | APPROVED
+  stops             Json      // array of scroll targets, hotspot coordinates, designer notes
+  approvedAt        DateTime?
+  approvalSignature String?
+}
+
+model DesignTokenPreset {
+  id              String   @id @default(uuid())
+  sprintId        String?
+  name            String
+  tokens          Json     // radii, fontScales, colorTokens: { background, primary, accent }
+  createdByClient Boolean  @default(false)
+}
+
+model LaunchAudit {
+  id          String   @id @default(uuid())
+  stagingUrl  String
+  score       Int      // 0 to 100
+  metaDetails Json     // ogTitle, ogImage, ogDescription, canonicalUrl
+  assetIssues Json     // array of overweight assets/uncompressed images
+  scannedAt   DateTime @default(now())
+}
+
+model BrandVaultRule {
+  id             String   @id @default(uuid())
+  clientId       String
+  approvedColors Json     // array of hex values
+  approvedFonts  Json     // array of font families
+  minHealthScore Int      @default(85)
+  lastAuditScore Int?
 }

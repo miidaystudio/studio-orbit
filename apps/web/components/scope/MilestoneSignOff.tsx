@@ -2,12 +2,15 @@
 
 import React, { useState } from 'react';
 import { Milestone } from '@studio-orbit/types';
+import MilestoneCertificate from './MilestoneCertificate';
 
 interface MilestoneSignOffProps {
   milestones?: Milestone[];
 }
 
 export default function MilestoneSignOff({ milestones: initialMilestones }: MilestoneSignOffProps) {
+  const [activeCertificate, setActiveCertificate] = useState<Milestone | null>(null);
+
   const [milestones, setMilestones] = useState<Milestone[]>(
     initialMilestones || [
       {
@@ -74,8 +77,8 @@ export default function MilestoneSignOff({ milestones: initialMilestones }: Mile
             key={m.id}
             className="bg-[#FAF8F5] border border-[#E5E2DA] p-6 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
           >
-            <div>
-              <div className="flex items-center gap-3 mb-1">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
                 <span className="w-6 h-6 rounded-full bg-[#121212] text-white text-xs font-mono font-bold flex items-center justify-center">
                   {idx + 1}
                 </span>
@@ -96,8 +99,16 @@ export default function MilestoneSignOff({ milestones: initialMilestones }: Mile
               <p className="text-xs text-[#686661] ml-9 leading-relaxed">{m.description}</p>
 
               {m.signedBy && (
-                <div className="ml-9 mt-3 text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 p-2 rounded-lg inline-block">
-                  ✓ Verified Digital Sign-Off: <strong>{m.signedBy}</strong> on {m.signedAt}
+                <div className="ml-9 flex flex-wrap items-center gap-3 pt-1">
+                  <div className="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 p-2 rounded-lg inline-block">
+                    ✓ Verified Digital Sign-Off: <strong>{m.signedBy}</strong> on {m.signedAt}
+                  </div>
+                  <button
+                    onClick={() => setActiveCertificate(m)}
+                    className="px-3 py-1 bg-[#121212] hover:bg-[#C85A32] text-white text-[10px] font-mono uppercase tracking-wider rounded-lg transition"
+                  >
+                    📜 View Certificate
+                  </button>
                 </div>
               )}
             </div>
@@ -116,6 +127,18 @@ export default function MilestoneSignOff({ milestones: initialMilestones }: Mile
           </div>
         ))}
       </div>
+
+      {/* Cryptographic Milestone Certificate Modal */}
+      {activeCertificate && (
+        <MilestoneCertificate
+          milestoneTitle={activeCertificate.title}
+          projectName="Lumina Portal Workspace"
+          clientName="Lumina Tech Inc."
+          signedBy={activeCertificate.signedBy || 'Sarah Chen'}
+          signedAt={activeCertificate.signedAt || 'Aug 14, 2026'}
+          onClose={() => setActiveCertificate(null)}
+        />
+      )}
     </div>
   );
 }

@@ -3,34 +3,73 @@
 @tailwind utilities;
 
 :root {
-  --background: #F9F8F3;
-  --foreground: #121212;
-  --muted: #686661;
-  --hairline: #E5E2DA;
-  --terracotta: #C85A32;
+  --background: #08090A;
+  --surface: #111315;
+  --surface-panel: #16181B;
+  --surface-panel-alt: #1F2328;
+  --foreground: #FFFFFF;
+  --foreground-light: #FFFFFF;
+  --muted: #828892;
+  --muted-light: #828892;
+  --border: #22252A;
+  --hairline: rgba(255, 255, 255, 0.08);
+  --cyber-lime: #CCFF00;
+  --acid-lime: #CCFF00;
+  --deep-indigo: #08090A;
+  --card-primary: #111315;
+  --card-secondary: #16181B;
+  --pale-oyster: #FFFFFF;
+}
+
+.dark {
+  --background: #08090A;
+  --surface: #111315;
+  --surface-panel: #16181B;
+  --surface-panel-alt: #1F2328;
+  --foreground: #FFFFFF;
+  --foreground-light: #FFFFFF;
+  --muted: #828892;
+  --muted-light: #828892;
+  --border: #22252A;
+  --hairline: rgba(255, 255, 255, 0.08);
+  --cyber-lime: #CCFF00;
+  --acid-lime: #CCFF00;
+  --deep-indigo: #08090A;
+  --card-primary: #111315;
+  --card-secondary: #16181B;
+  --pale-oyster: #FFFFFF;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans), 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbars for editorial parchment vibe */
+/* Tactical Cyber-Techwear utilities */
+.glow-lime {
+  box-shadow: 0 0 12px rgba(204, 255, 0, 0.3);
+}
+
+.glow-lime-lg {
+  box-shadow: 0 0 24px rgba(204, 255, 0, 0.4);
+}
+
+/* Custom Tactical Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #F9F8F3;
+  background: #08090A;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E5E2DA;
-  border-radius: 3px;
+  background: #22252A;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C8C4B9;
+  background: #CCFF00;
 }
