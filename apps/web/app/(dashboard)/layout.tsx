@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import ThemeToggle from '@/components/ui/ThemeToggle';
+import { ChevronDown, Layers, LayoutDashboard, Sliders, ShieldCheck, LogOut, ExternalLink, Sparkles } from 'lucide-react';
 
 export default function DashboardLayout({
   children,
@@ -43,39 +43,35 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-[#08090A] text-[#FFFFFF] flex flex-col selection:bg-[#CCFF00] selection:text-black font-sans">
-      {/* Tactical Cyber-Techwear Sticky Navigation Header */}
-      <header className="sticky top-0 z-40 bg-[#08090A]/95 backdrop-blur-md border-b border-[#22252A] px-8 py-3.5 flex items-center justify-between text-[#FFFFFF] shadow-sm">
+    <div className="min-h-screen bg-[#F9F9F9] text-[#111111] flex flex-col selection:bg-[#346853] selection:text-white font-sans antialiased">
+      {/* Vault Minimalist Editorial Sticky Navigation Header */}
+      <header className="sticky top-0 z-40 bg-[#F9F9F9]/90 backdrop-blur-md border-b border-gray-200/80 px-6 sm:px-12 py-4 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-8">
           <Link href="/projects" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-xl bg-[#111315] border border-[#22252A] flex items-center justify-center shadow-sm group-hover:border-[#CCFF00] transition-colors">
-              <img
-                src="/favicon.jpg"
-                alt="StudioOrbit Logo"
-                className="w-5 h-5 rounded-md object-cover"
-              />
+            <div className="w-8 h-8 rounded-xl bg-[#346853] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition">
+              <div className="w-3.5 h-3.5 rounded-sm bg-white/20 border border-white/60" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold tracking-tight text-[#FFFFFF]">
-                StudioOrbit
+              <span className="text-base font-extrabold font-heading tracking-tight uppercase text-[#111111]">
+                STUDIO<span className="text-[#346853]">ORBIT</span>
               </span>
-              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#111315] text-[#CCFF00] border border-[#22252A] font-semibold">
-                v2.0
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-[#346853] border border-emerald-200 font-bold">
+                COCKPIT
               </span>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1.5 p-1 bg-[#111315] rounded-full border border-[#22252A]">
+          <nav className="hidden md:flex items-center gap-1.5 p-1 bg-white rounded-full border border-gray-200 shadow-xs">
             {navItems.map((item) => {
               const isActive = pathname.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-xs font-mono uppercase tracking-wider px-4 py-1.5 rounded-full transition-all ${
+                  className={`text-xs font-semibold px-4 py-1.5 rounded-full transition-all ${
                     isActive
-                      ? 'bg-[#16181B] text-[#CCFF00] font-bold border border-[#22252A]'
-                      : 'text-[#828892] hover:text-[#FFFFFF] hover:bg-white/5'
+                      ? 'bg-[#111111] text-white shadow-xs'
+                      : 'text-gray-600 hover:text-[#111111] hover:bg-gray-50'
                   }`}
                 >
                   {item.label}
@@ -85,9 +81,15 @@ export default function DashboardLayout({
           </nav>
         </div>
 
-        {/* User Controls & Theme Toggle */}
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
+        {/* User Controls & Actions */}
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            className="text-xs font-semibold text-gray-600 hover:text-[#346853] transition hidden sm:inline-flex items-center gap-1"
+          >
+            <span>Live Portal</span>
+            <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+          </Link>
 
           {!loading && (
             <>
@@ -96,74 +98,67 @@ export default function DashboardLayout({
                   <button
                     type="button"
                     onClick={() => setDropdownOpen((prev) => !prev)}
-                    className="flex items-center gap-3 p-1 rounded-full hover:bg-white/[0.05] transition-colors group focus:outline-none"
+                    className="flex items-center gap-3 p-1 rounded-full hover:bg-gray-100 transition-colors group focus:outline-none"
                     aria-expanded={dropdownOpen}
                   >
                     <div className="text-right hidden sm:block">
-                      <p className="text-xs font-semibold text-[#FFFFFF] group-hover:text-[#CCFF00] transition-colors">
+                      <p className="text-xs font-bold text-[#111111] group-hover:text-[#346853] transition-colors">
                         {user.name}
                       </p>
-                      <p className="text-[10px] font-mono text-[#828892] uppercase">
+                      <p className="text-[10px] font-mono text-gray-500 uppercase">
                         {user.role}
                       </p>
                     </div>
 
                     {/* Circular Avatar */}
-                    <div className="w-8 h-8 rounded-full bg-[#111315] text-[#CCFF00] border border-[#22252A] font-mono text-xs font-bold flex items-center justify-center shadow-sm group-hover:border-[#CCFF00] transition-colors">
+                    <div className="w-9 h-9 rounded-full bg-[#111111] text-white font-mono text-xs font-bold flex items-center justify-center shadow-xs group-hover:bg-[#346853] transition-colors">
                       {user.initials}
                     </div>
                   </button>
 
                   {/* Dropdown Menu */}
                   {dropdownOpen && (
-                    <div className="absolute right-0 mt-3 w-64 bg-[#111315] border border-[#22252A] rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)] p-4 space-y-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-[#FFFFFF]">
-                      <div className="pb-3 border-b border-[#22252A]">
-                        <p className="text-xs font-bold text-[#FFFFFF]">{user.name}</p>
-                        <p className="text-[11px] text-[#828892] truncate font-mono">{user.email}</p>
-                        <span className="inline-block mt-2 text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#16181B] text-[#CCFF00] border border-[#22252A] font-medium">
+                    <div className="absolute right-0 mt-3 w-64 bg-white border border-gray-200 rounded-3xl shadow-xl p-4 space-y-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-[#111111]">
+                      <div className="pb-3 border-b border-gray-100">
+                        <p className="text-xs font-bold text-[#111111]">{user.name}</p>
+                        <p className="text-[11px] text-gray-500 truncate font-mono">{user.email}</p>
+                        <span className="inline-block mt-2 text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-[#346853] border border-emerald-200 font-bold">
                           {user.role}
                         </span>
                       </div>
 
-                      <div className="space-y-1 font-mono text-xs">
+                      <div className="space-y-1 font-sans text-xs font-medium">
                         <Link
                           href="/projects"
                           onClick={() => setDropdownOpen(false)}
-                          className="block w-full text-left px-3 py-2 text-xs font-medium text-[#FFFFFF] hover:bg-[#16181B] rounded-xl transition"
+                          className="block w-full text-left px-3 py-2 text-xs text-[#111111] hover:bg-gray-50 rounded-xl transition"
                         >
                           Studio Cockpit (Overview)
                         </Link>
                         <Link
                           href="/staging"
                           onClick={() => setDropdownOpen(false)}
-                          className="block w-full text-left px-3 py-2 text-xs font-medium text-[#FFFFFF] hover:bg-[#16181B] rounded-xl transition"
+                          className="block w-full text-left px-3 py-2 text-xs text-[#111111] hover:bg-gray-50 rounded-xl transition"
                         >
                           Review Sandbox
                         </Link>
                         <Link
                           href="/launch-brand"
                           onClick={() => setDropdownOpen(false)}
-                          className="block w-full text-left px-3 py-2 text-xs font-medium text-[#FFFFFF] hover:bg-[#16181B] rounded-xl transition"
+                          className="block w-full text-left px-3 py-2 text-xs text-[#111111] hover:bg-gray-50 rounded-xl transition"
                         >
                           Launch & Brand
                         </Link>
-                        <Link
-                          href="/clients"
-                          onClick={() => setDropdownOpen(false)}
-                          className="block w-full text-left px-3 py-2 text-xs font-medium text-[#CCFF00] hover:bg-[#16181B] rounded-xl transition flex items-center justify-between"
-                        >
-                          <span>Client Directory</span>
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#16181B] text-[#FFFFFF] border border-[#22252A]">Admin</span>
-                        </Link>
                       </div>
 
-                      <div className="pt-2 border-t border-[#22252A]">
+                      <div className="pt-2 border-t border-gray-100">
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-950/30 rounded-xl transition flex items-center justify-between"
+                          className="w-full py-2 px-3 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl text-left transition flex items-center justify-between"
                         >
-                          <span>Log Out ↗</span>
+                          <span>Sign Out</span>
+                          <LogOut className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
@@ -172,10 +167,9 @@ export default function DashboardLayout({
               ) : (
                 <Link
                   href="/login"
-                  className="px-4 py-2 rounded-full bg-[#CCFF00] hover:bg-[#b8e600] text-black text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-[0_0_12px_rgba(204,255,0,0.3)] flex items-center gap-1.5 active:scale-95"
+                  className="px-4 py-2 rounded-full bg-[#111111] hover:bg-[#346853] text-white text-xs font-bold transition shadow-xs"
                 >
-                  <span>Sign In</span>
-                  <span className="text-sm">→</span>
+                  Sign In
                 </Link>
               )}
             </>
@@ -183,8 +177,8 @@ export default function DashboardLayout({
         </div>
       </header>
 
-      {/* Main Page Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 lg:p-10">
+      {/* Main Workspace Stage */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-6 sm:p-12 space-y-8">
         {children}
       </main>
     </div>

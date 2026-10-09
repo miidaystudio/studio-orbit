@@ -1,15 +1,16 @@
 import './globals.css';
-import { Plus_Jakarta_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google';
+import { Plus_Jakarta_Sans, JetBrains_Mono, Outfit, Space_Grotesk } from 'next/font/google';
 
 const sansFont = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-sans',
+  weight: ['400', '500', '600', '700', '800'],
 });
 
-const serifFont = Instrument_Serif({
-  weight: '400',
+const headingFont = Outfit({
   subsets: ['latin'],
-  variable: '--font-serif',
+  variable: '--font-heading',
+  weight: ['500', '600', '700', '800', '900'],
 });
 
 const monoFont = JetBrains_Mono({
@@ -34,13 +35,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${sansFont.variable} ${serifFont.variable} ${monoFont.variable}`}
+      className={`${sansFont.variable} ${headingFont.variable} ${monoFont.variable}`}
     >
-      <body className="bg-[#08090A] text-[#FFFFFF] antialiased selection:bg-[#CCFF00] selection:text-black font-sans">
+      <body className="bg-[#F8F9FA] text-[#0F1115] antialiased selection:bg-[#2E5B4B] selection:text-white font-sans">
         {children}
       </body>
     </html>
   );
 }
-
-

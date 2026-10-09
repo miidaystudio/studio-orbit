@@ -1,75 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #08090A;
-  --surface: #111315;
-  --surface-panel: #16181B;
-  --surface-panel-alt: #1F2328;
-  --foreground: #FFFFFF;
-  --foreground-light: #FFFFFF;
-  --muted: #828892;
-  --muted-light: #828892;
-  --border: #22252A;
-  --hairline: rgba(255, 255, 255, 0.08);
-  --cyber-lime: #CCFF00;
-  --acid-lime: #CCFF00;
-  --deep-indigo: #08090A;
-  --card-primary: #111315;
-  --card-secondary: #16181B;
-  --pale-oyster: #FFFFFF;
-}
-
-.dark {
-  --background: #08090A;
-  --surface: #111315;
-  --surface-panel: #16181B;
-  --surface-panel-alt: #1F2328;
-  --foreground: #FFFFFF;
-  --foreground-light: #FFFFFF;
-  --muted: #828892;
-  --muted-light: #828892;
-  --border: #22252A;
-  --hairline: rgba(255, 255, 255, 0.08);
-  --cyber-lime: #CCFF00;
-  --acid-lime: #CCFF00;
-  --deep-indigo: #08090A;
-  --card-primary: #111315;
-  --card-secondary: #16181B;
-  --pale-oyster: #FFFFFF;
+  --background: #F8F9FA;
+  --surface: #FFFFFF;
+  --foreground: #0F1115;
+  --vault-green: #2E5B4B;
+  --vault-peach: #F3D5C5;
+  --border: #E5E7EB;
+  --hairline: rgba(15, 17, 21, 0.08);
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans), 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Tactical Cyber-Techwear utilities */
-.glow-lime {
-  box-shadow: 0 0 12px rgba(204, 255, 0, 0.3);
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading), 'Outfit', 'Plus Jakarta Sans', sans-serif;
 }
 
-.glow-lime-lg {
-  box-shadow: 0 0 24px rgba(204, 255, 0, 0.4);
-}
-
-/* Custom Tactical Scrollbars */
+/* Custom Soft Scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #08090A;
+  background: #F8F9FA;
 }
 ::-webkit-scrollbar-thumb {
-  background: #22252A;
-  border-radius: 2px;
+  background: #CBD5E1;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #CCFF00;
+  background: #94A3B8;
 }

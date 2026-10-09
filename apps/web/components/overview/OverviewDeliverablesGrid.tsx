@@ -5,18 +5,7 @@ import Link from 'next/link';
 import { DeliverableItem, createDeliverableAction } from '@/app/actions/deliverables';
 import DeliverableCard from '@/components/overview/DeliverableCard';
 import Toast from '@/components/ui/Toast';
-
-// --- Tactical Brutalist Corner Crosshairs ---
-function CornerCrosshairs() {
-  return (
-    <>
-      <span className="absolute -top-1.5 -left-1.5 text-[11px] font-mono text-[#828892]/50 select-none pointer-events-none leading-none">+</span>
-      <span className="absolute -top-1.5 -right-1.5 text-[11px] font-mono text-[#828892]/50 select-none pointer-events-none leading-none">+</span>
-      <span className="absolute -bottom-1.5 -left-1.5 text-[11px] font-mono text-[#828892]/50 select-none pointer-events-none leading-none">+</span>
-      <span className="absolute -bottom-1.5 -right-1.5 text-[11px] font-mono text-[#828892]/50 select-none pointer-events-none leading-none">+</span>
-    </>
-  );
-}
+import { Plus, Search, Filter, Sparkles, Layers, Sliders, Activity, ShieldCheck, CheckCircle2, ArrowUpRight } from 'lucide-react';
 
 interface TelemetryMetrics {
   activeNodes: number;
@@ -52,7 +41,6 @@ export default function OverviewDeliverablesGrid({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Clean User Name Formatting
   let formattedName = userName;
   try {
     formattedName = decodeURIComponent(userName);
@@ -118,228 +106,109 @@ export default function OverviewDeliverablesGrid({
       (activeFilter === 'MOTION' && item.status === 'IN_REVIEW') ||
       (activeFilter === 'HANDOFF' && item.status === 'COMPLETED');
 
-    const query = searchQuery.toLowerCase().trim();
-    const matchesQuery =
-      !query ||
-      item.client.toLowerCase().includes(query) ||
-      item.name.toLowerCase().includes(query) ||
-      (item.badgeToken && item.badgeToken.toLowerCase().includes(query)) ||
-      (item.tagline && item.tagline.toLowerCase().includes(query));
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.badgeToken.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesFilter && matchesQuery;
+    return matchesFilter && matchesSearch;
   });
 
   return (
-    <div className="space-y-8 selection:bg-[#CCFF00] selection:text-black max-w-7xl mx-auto text-[#FFFFFF] font-sans">
-      {/* Toast Notification */}
-      {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
+    <div className="space-y-8 animate-in fade-in duration-300">
+      
+      {/* Toast feedback */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#111111] text-white px-5 py-3 rounded-2xl text-xs font-mono font-bold shadow-xl flex items-center gap-2 animate-bounce">
+          <Sparkles className="w-4 h-4 text-[#346853]" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
 
-      {/* Header Section */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-[#22252A]">
-        <div className="max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded bg-[#111315] border border-[#22252A] text-[11px] font-mono font-bold tracking-wide text-[#CCFF00] shadow-[0_0_12px_rgba(204,255,0,0.2)]">
-            <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-pulse" />
-            <span>[SYS-01 // COCKPIT &bull; {formattedName.toUpperCase()}]</span>
+      {/* 1. Dashboard Banner & Studio Principal Welcome */}
+      <div className="bg-white border border-gray-200 rounded-3xl p-8 sm:p-10 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="space-y-2 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-[#346853] border border-emerald-200 text-xs font-mono font-bold uppercase tracking-wider">
+            <span className="w-2 h-2 rounded-full bg-[#346853] animate-pulse" />
+            <span>Studio Master Cockpit</span>
           </div>
 
-          <h1 className="text-4xl lg:text-5xl font-black uppercase tracking-tight text-[#FFFFFF] leading-[1.05]">
-            CREATIVE ENGINEERING <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#CCFF00] to-[#FFFFFF]">DELIVERY OS.</span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#111111] font-heading uppercase">
+            Welcome back, <span className="text-[#346853]">{formattedName}</span>
           </h1>
 
-          <p className="text-xs text-[#828892] max-w-xl leading-relaxed font-mono">
-            Visual mutation telemetry, live kinetic curve tuning, and automated executive client handoff vaults.
+          <p className="text-xs sm:text-sm text-gray-500 max-w-xl font-medium">
+            Manage your staging pipelines, coordinate visual QA overrides, review sprint burndown hours, and dispatch client review portals.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 font-mono">
-          <Link
-            href={deliverables.length > 0 ? `/review-sandbox?deliverableId=${deliverables[0].id}` : '/review-sandbox'}
-            className="px-4 py-2.5 rounded-xl bg-[#111315] border border-[#22252A] hover:border-[#CCFF00] text-xs font-bold text-[#FFFFFF] transition-all shadow-sm flex items-center gap-2"
-          >
-            <span>LAUNCH SANDBOX</span>
-            <span className="text-[#CCFF00]">→</span>
-          </Link>
+        <div className="flex items-center gap-3 relative z-10">
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="px-5 py-2.5 rounded-xl bg-[#CCFF00] hover:bg-[#b8e600] text-black text-xs font-black uppercase tracking-wider transition-all shadow-[0_0_16px_rgba(204,255,0,0.35)] active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            className="px-5 py-3 bg-[#111111] hover:bg-[#346853] text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 active:scale-95 whitespace-nowrap"
           >
-            <span>+ NEW DELIVERABLE</span>
+            <Plus className="w-4 h-4 text-[#346853]" />
+            <span>New Deliverable</span>
           </button>
         </div>
       </div>
 
-      {/* 1. Global Telemetry Metric Strip */}
+      {/* 2. Telemetry Quick Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric 1: Active Staging Nodes */}
-        <div className="bg-[#111315] border border-[#22252A] rounded-2xl p-4 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden group hover:border-[#CCFF00]/50 transition">
-          <CornerCrosshairs />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#828892]">
-              Active Staging Nodes
-            </span>
-            <span className="w-2 h-2 rounded-full bg-[#CCFF00] shadow-[0_0_8px_rgba(204,255,0,0.8)] animate-pulse" />
-          </div>
-          <div>
-            <div className="text-2xl font-mono font-black text-[#FFFFFF]">
-              {telemetry.activeNodes} NODES
+        {[
+          { label: 'Active Staging Nodes', count: telemetry.activeNodes, icon: '🟢', sub: 'TLS 1.3 Verified' },
+          { label: 'Staged Visual Variants', count: telemetry.stagedVariants, icon: '🎨', sub: 'DOM Mutator Active' },
+          { label: 'Kinetic Motion Curves', count: telemetry.motionProfiles, icon: '∿', sub: 'CSS / GSAP Telemetry' },
+          { label: 'Pending Client Sign-Offs', count: telemetry.pendingHandoffs, icon: '🔐', sub: 'Cryptographic Check' },
+        ].map((stat, i) => (
+          <div key={i} className="bg-white border border-gray-200 rounded-3xl p-5 shadow-xs space-y-3">
+            <div className="flex items-center justify-between text-xs text-gray-500 font-mono font-bold">
+              <span>{stat.label}</span>
+              <span>{stat.icon}</span>
             </div>
-            <div className="text-[10px] font-mono text-[#CCFF00] mt-0.5 font-bold">
-              ● VERIFIED 200 OK (PROXY LIVE)
+            <div className="text-3xl font-extrabold font-heading text-[#111111]">
+              {stat.count}
             </div>
-          </div>
-        </div>
-
-        {/* Metric 2: Staged Variants */}
-        <div className="bg-[#111315] border border-[#22252A] rounded-2xl p-4 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden group hover:border-[#CCFF00]/50 transition">
-          <CornerCrosshairs />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#828892]">
-              Staged Variants
-            </span>
-            <span className="text-[#CCFF00] text-xs font-mono font-bold">✦</span>
-          </div>
-          <div>
-            <div className="text-2xl font-mono font-black text-[#FFFFFF]">
-              {telemetry.stagedVariants} OVERRIDES
-            </div>
-            <div className="text-[10px] font-mono text-[#828892] mt-0.5">
-              Live DOM Mutations Active
+            <div className="text-[10px] font-mono text-gray-400 font-semibold">
+              {stat.sub}
             </div>
           </div>
-        </div>
-
-        {/* Metric 3: Motion Profiles */}
-        <div className="bg-[#111315] border border-[#22252A] rounded-2xl p-4 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden group hover:border-[#CCFF00]/50 transition">
-          <CornerCrosshairs />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#828892]">
-              Motion Profiles
-            </span>
-            <span className="text-[#CCFF00] text-xs font-mono font-bold">∿</span>
-          </div>
-          <div>
-            <div className="text-2xl font-mono font-black text-[#FFFFFF]">
-              {telemetry.motionProfiles} CURVES
-            </div>
-            <div className="text-[10px] font-mono text-[#828892] mt-0.5">
-              Bézier Presets (CSS/GSAP)
-            </div>
-          </div>
-        </div>
-
-        {/* Metric 4: Pending Handoffs */}
-        <div className="bg-[#111315] border border-[#22252A] rounded-2xl p-4 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden group hover:border-[#CCFF00]/50 transition">
-          <CornerCrosshairs />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#828892]">
-              Pending Handoffs
-            </span>
-            <span className="text-[#CCFF00] text-xs font-mono font-bold">⬡</span>
-          </div>
-          <div>
-            <div className="text-2xl font-mono font-black text-[#FFFFFF]">
-              {telemetry.pendingHandoffs} VAULTS
-            </div>
-            <div className="text-[10px] font-mono text-[#CCFF00] mt-0.5 font-bold">
-              [STAGE_READY // 99.8%]
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* 2. Modernized Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-[#111315] p-3 rounded-2xl border border-[#22252A] shadow-sm relative">
-        <CornerCrosshairs />
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 p-1 bg-[#08090A] rounded-xl border border-[#22252A]">
-          {[
-            { id: 'ALL', label: 'ALL PROJECTS' },
-            { id: 'OVERRIDES', label: 'IN REVIEW / OVERRIDES' },
-            { id: 'MOTION', label: 'KINETIC MOTION QA' },
-            { id: 'HANDOFF', label: 'READY FOR HANDOFF' },
-          ].map((tab) => {
-            const isActive = activeFilter === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveFilter(tab.id as CreativeFilter)}
-                className={`text-xs font-mono px-3.5 py-1.5 rounded-lg transition-all whitespace-nowrap uppercase font-bold ${
-                  isActive
-                    ? 'bg-[#16181B] text-[#CCFF00] border border-[#22252A] shadow-[0_0_8px_rgba(204,255,0,0.2)]'
-                    : 'text-[#828892] hover:text-[#FFFFFF] hover:bg-white/[0.04]'
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Instant Client / Title Search Bar */}
-        <div className="relative min-w-[260px]">
+      {/* 3. Search & Category Filters */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="SEARCH CLIENT, TITLE, TAG..."
-            className="w-full text-xs font-mono bg-[#08090A] border border-[#22252A] rounded-xl px-3.5 py-2 pl-9 text-[#FFFFFF] placeholder-[#828892] focus:outline-none focus:border-[#CCFF00] transition"
+            placeholder="Search deliverables, clients, tags..."
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-2xl text-xs font-medium focus:outline-none focus:border-[#346853] shadow-xs"
           />
-          <span className="absolute left-3 top-2.5 text-xs text-[#828892] flex items-center">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </span>
-          {searchQuery && (
+        </div>
+
+        <div className="flex items-center gap-1.5 p-1 bg-white border border-gray-200 rounded-2xl shadow-xs w-full sm:w-auto overflow-x-auto">
+          {(['ALL', 'OVERRIDES', 'MOTION', 'HANDOFF'] as CreativeFilter[]).map((filter) => (
             <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-2 text-xs text-[#828892] hover:text-[#CCFF00]"
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={`px-4 py-1.5 rounded-xl text-xs font-mono uppercase font-bold transition ${
+                activeFilter === filter
+                  ? 'bg-[#111111] text-white shadow-xs'
+                  : 'text-gray-500 hover:text-[#111111] hover:bg-gray-50'
+              }`}
             >
-              ✕
+              {filter}
             </button>
-          )}
+          ))}
         </div>
       </div>
 
-      {/* 3. Deliverables Grid */}
-      {filteredDeliverables.length === 0 ? (
-        <div className="bg-[#111315] border border-dashed border-[#22252A] rounded-2xl p-12 text-center space-y-4 shadow-sm text-[#FFFFFF] relative">
-          <CornerCrosshairs />
-          <div className="w-12 h-12 rounded-2xl bg-[#08090A] text-[#CCFF00] border border-[#22252A] flex items-center justify-center mx-auto text-xl font-mono shadow-[0_0_12px_rgba(204,255,0,0.2)]">
-            ⬡
-          </div>
-          <h3 className="text-xl font-mono font-black uppercase text-[#FFFFFF]">No Deliverables Found</h3>
-          <p className="text-xs font-mono text-[#828892] max-w-md mx-auto">
-            {searchQuery || activeFilter !== 'ALL'
-              ? 'No projects match your current search query or filter selection.'
-              : 'There are no active deliverables in your PostgreSQL database yet.'}
-          </p>
-          <div className="pt-2 flex justify-center gap-3">
-            {searchQuery || activeFilter !== 'ALL' ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery('');
-                  setActiveFilter('ALL');
-                }}
-                className="px-4 py-2 rounded-xl border border-[#22252A] text-xs font-mono text-[#FFFFFF] hover:border-[#CCFF00]"
-              >
-                Reset Filters
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(true)}
-                className="px-5 py-2.5 rounded-xl bg-[#CCFF00] hover:bg-[#b8e600] text-black text-xs font-mono font-black uppercase shadow-[0_0_12px_rgba(204,255,0,0.3)]"
-              >
-                Create First Deliverable →
-              </button>
-            )}
-          </div>
-        </div>
-      ) : (
+      {/* 4. Deliverables Grid */}
+      {filteredDeliverables.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDeliverables.map((item, idx) => (
             <DeliverableCard
@@ -350,131 +219,123 @@ export default function OverviewDeliverablesGrid({
             />
           ))}
         </div>
+      ) : (
+        <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center space-y-4 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto text-2xl">
+            📦
+          </div>
+          <h3 className="text-lg font-bold text-[#111111] font-heading">
+            No Deliverables Found
+          </h3>
+          <p className="text-xs text-gray-500 max-w-sm mx-auto">
+            {searchQuery ? `No matching deliverables for "${searchQuery}".` : 'Get started by creating your first client staging deliverable.'}
+          </p>
+        </div>
       )}
 
-      {/* Modal for "+ New Deliverable" */}
+      {/* 5. Create Deliverable Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-[#111315] border border-[#22252A] rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6 relative animate-in zoom-in-95 duration-150 text-[#FFFFFF]">
-            <CornerCrosshairs />
-            <div className="flex justify-between items-center border-b border-[#22252A] pb-4">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#CCFF00] font-bold">
-                  [STUDIO CREATOR // SYS-INIT]
-                </span>
-                <h3 className="text-xl font-mono font-black uppercase text-[#FFFFFF] mt-0.5">
-                  New Client Deliverable
-                </h3>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-xs text-[#828892] hover:text-[#CCFF00] font-mono p-1"
-              >
-                ✕
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6">
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#346853] font-bold">
+                NEW STAGING INSTANCE
+              </span>
+              <h3 className="text-2xl font-bold uppercase tracking-tight text-[#111111] font-heading">
+                Create Staging Deliverable
+              </h3>
             </div>
 
-            <form onSubmit={handleCreateDeliverable} className="space-y-4 text-xs font-mono">
+            <form onSubmit={handleCreateDeliverable} className="space-y-4">
               <div className="space-y-1">
-                <label className="font-bold text-[#FFFFFF] uppercase text-[10px]">
-                  Client Account
-                </label>
+                <label className="text-xs font-semibold text-gray-700">Client Name</label>
                 <input
                   type="text"
-                  required
                   value={formState.clientName}
                   onChange={(e) => setFormState({ ...formState, clientName: e.target.value })}
-                  placeholder="e.g. miidayStudio"
-                  className="w-full p-2.5 bg-[#08090A] border border-[#22252A] rounded-xl text-xs text-[#FFFFFF] focus:outline-none focus:border-[#CCFF00]"
+                  required
+                  className="w-full px-3.5 py-2.5 bg-[#F9F9F9] border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-[#346853] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-[#FFFFFF] uppercase text-[10px]">
-                  Deliverable Title
-                </label>
+                <label className="text-xs font-semibold text-gray-700">Deliverable Title</label>
                 <input
                   type="text"
-                  required
+                  placeholder="e.g. Lumina Kinetic Brand Overhaul"
                   value={formState.name}
                   onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                  placeholder="e.g. Brand System & Client Portal"
-                  className="w-full p-2.5 bg-[#08090A] border border-[#22252A] rounded-xl text-xs text-[#FFFFFF] focus:outline-none focus:border-[#CCFF00]"
+                  required
+                  className="w-full px-3.5 py-2.5 bg-[#F9F9F9] border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-[#346853] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-[#FFFFFF] uppercase text-[10px]">
-                  Staging / Preview URL
-                </label>
+                <label className="text-xs font-semibold text-gray-700">Description / Tagline</label>
                 <input
                   type="text"
-                  required
-                  value={formState.stagingUrl}
-                  onChange={(e) => setFormState({ ...formState, stagingUrl: e.target.value })}
-                  placeholder="https://miidaystudio.online"
-                  className="w-full p-2.5 bg-[#08090A] border border-[#22252A] rounded-xl text-xs text-[#FFFFFF] focus:outline-none focus:border-[#CCFF00]"
+                  placeholder="e.g. Atomic design system & responsive viewports"
+                  value={formState.tagline}
+                  onChange={(e) => setFormState({ ...formState, tagline: e.target.value })}
+                  className="w-full px-3.5 py-2.5 bg-[#F9F9F9] border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-[#346853] focus:outline-none"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-gray-700">Live Staging Target URL</label>
+                <input
+                  type="url"
+                  value={formState.stagingUrl}
+                  onChange={(e) => setFormState({ ...formState, stagingUrl: e.target.value })}
+                  required
+                  className="w-full px-3.5 py-2.5 bg-[#F9F9F9] border border-gray-200 rounded-xl text-xs font-mono focus:bg-white focus:border-[#346853] focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="font-bold text-[#FFFFFF] uppercase text-[10px]">
-                    System Token
-                  </label>
-                  <input
-                    type="text"
-                    value={formState.badgeToken}
-                    onChange={(e) => setFormState({ ...formState, badgeToken: e.target.value })}
-                    className="w-full p-2.5 bg-[#08090A] border border-[#22252A] rounded-xl text-xs text-[#FFFFFF] focus:outline-none focus:border-[#CCFF00]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-bold text-[#FFFFFF] uppercase text-[10px]">
-                    Allocated Hours
-                  </label>
+                  <label className="text-xs font-semibold text-gray-700">Sprint Allocated Hours</label>
                   <input
                     type="number"
                     value={formState.allocatedHours}
                     onChange={(e) => setFormState({ ...formState, allocatedHours: Number(e.target.value) })}
-                    className="w-full p-2.5 bg-[#08090A] border border-[#22252A] rounded-xl text-xs text-[#FFFFFF] focus:outline-none focus:border-[#CCFF00]"
+                    className="w-full px-3.5 py-2.5 bg-[#F9F9F9] border border-gray-200 rounded-xl text-xs font-mono focus:bg-white focus:border-[#346853] focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-gray-700">Badge Token</label>
+                  <input
+                    type="text"
+                    value={formState.badgeToken}
+                    onChange={(e) => setFormState({ ...formState, badgeToken: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-[#F9F9F9] border border-gray-200 rounded-xl text-xs font-mono focus:bg-white focus:border-[#346853] focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-bold text-[#FFFFFF] uppercase text-[10px]">
-                  Scope Description
-                </label>
-                <textarea
-                  rows={2}
-                  value={formState.tagline}
-                  onChange={(e) => setFormState({ ...formState, tagline: e.target.value })}
-                  placeholder="Describe scope deliverables and telemetry..."
-                  className="w-full p-2.5 bg-[#08090A] border border-[#22252A] rounded-xl text-xs text-[#FFFFFF] focus:outline-none focus:border-[#CCFF00] resize-none"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-3 border-t border-[#22252A]">
+              <div className="pt-4 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-[#22252A] text-xs font-mono text-[#828892] hover:text-[#FFFFFF]"
+                  className="px-4 py-2.5 text-xs font-semibold text-gray-500 hover:text-[#111111]"
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
-                  disabled={isSubmitting || !formState.name.trim()}
-                  className="px-5 py-2 rounded-xl bg-[#CCFF00] hover:bg-[#b8e600] text-black text-xs font-mono font-black uppercase transition disabled:opacity-50 shadow-[0_0_12px_rgba(204,255,0,0.3)]"
+                  disabled={isSubmitting}
+                  className="px-5 py-2.5 bg-[#346853] hover:bg-[#2A5443] text-white rounded-xl text-xs font-bold transition shadow-xs disabled:opacity-50"
                 >
-                  {isSubmitting ? 'Creating...' : 'Create Deliverable →'}
+                  {isSubmitting ? 'Creating...' : 'Create Instance'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
     </div>
   );
 }

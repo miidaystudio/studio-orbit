@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { ShieldCheck, ArrowRight, KeyRound, Lock } from 'lucide-react';
 
 export default function ClientInviteOnboardingPage() {
   const searchParams = useSearchParams();
@@ -59,36 +61,47 @@ export default function ClientInviteOnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#121212] flex flex-col justify-center items-center px-6 selection:bg-[#C85A32] selection:text-white font-sans">
-      <div className="w-full max-w-lg bg-white border border-[#E5E2DA] rounded-3xl p-8 sm:p-10 shadow-[0_20px_40px_-15px_rgba(18,18,18,0.06)] relative overflow-hidden space-y-6">
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#C85A32]/5 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-[#F9F9F9] text-[#111111] flex flex-col justify-center items-center px-6 selection:bg-[#346853] selection:text-white font-sans antialiased relative overflow-hidden">
+      
+      {/* Background Wire Line */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 1440 900" fill="none">
+        <line x1="720" y1="0" x2="720" y2="280" stroke="#E5E7EB" strokeWidth="1" />
+        <circle cx="720" cy="280" r="4" fill="#346853" />
+      </svg>
 
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#E5E2DA] text-[10px] font-mono uppercase tracking-widest text-[#C85A32]">
-            <span className="w-2 h-2 rounded-full bg-[#C85A32] animate-pulse" />
-            PRIVATE CLIENT INVITE
+      <div className="w-full max-w-lg bg-white border border-gray-200 rounded-3xl p-8 sm:p-10 shadow-xl relative z-10 space-y-6">
+        
+        <div className="text-center space-y-3 flex flex-col items-center">
+          <Link href="/" className="w-12 h-12 rounded-2xl bg-[#346853] flex items-center justify-center text-white shadow-xs hover:scale-105 transition">
+            <div className="w-5 h-5 rounded-sm bg-white/20 border border-white/60" />
+          </Link>
+
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[#346853] border border-emerald-200 text-xs font-mono font-bold uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#346853]" />
+            <span>Private Client Portal</span>
           </div>
-          <h1 className="text-3xl font-serif font-bold text-[#121212]">
-            Welcome to <span className="italic font-normal text-[#C85A32]">{clientName}</span> Workspace.
+
+          <h1 className="text-3xl font-extrabold font-heading text-[#111111] tracking-tight uppercase pt-1">
+            Welcome to <span className="text-[#346853]">{clientName}</span>
           </h1>
-          <p className="text-xs text-[#686661] max-w-md mx-auto">
-            You have been invited by Orbit Studio to access <strong className="text-[#121212]">{projectTitle}</strong>.
+          <p className="text-xs text-gray-500 max-w-md font-medium">
+            You have been granted token-level review access to <strong className="text-[#111111]">{projectTitle}</strong>.
           </p>
         </div>
 
         {error && (
           <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs text-rose-700 space-y-1 animate-in fade-in duration-200">
-            <span className="font-bold">⚠️ Authentication Mismatch</span>
+            <span className="font-bold">⚠️ Authentication Notice</span>
             <p className="text-[11px] leading-relaxed">{error}</p>
           </div>
         )}
 
-        <div className="space-y-4 pt-2">
+        <div className="space-y-4 pt-1">
           <button
             type="button"
             onClick={() => handleAuthenticate('google')}
             disabled={loading}
-            className="w-full py-3.5 px-4 bg-white border border-[#E5E2DA] hover:border-[#121212] text-[#121212] rounded-2xl text-xs font-semibold flex items-center justify-center gap-3 transition-all shadow-sm active:scale-[0.98] disabled:opacity-50"
+            className="w-full py-3.5 px-4 bg-white border border-gray-300 hover:border-[#111111] text-[#111111] rounded-2xl text-xs font-bold flex items-center justify-center gap-3 transition shadow-xs active:scale-[0.98] disabled:opacity-50"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -108,51 +121,51 @@ export default function ClientInviteOnboardingPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span>Continue with Google Account</span>
+            <span>Verify with Google Workspace</span>
           </button>
 
-          <div className="relative flex py-2 items-center">
-            <div className="flex-grow border-t border-[#E5E2DA]" />
-            <span className="flex-shrink mx-4 text-[10px] font-mono text-[#686661] uppercase tracking-wider">or verify email</span>
-            <div className="flex-grow border-t border-[#E5E2DA]" />
+          <div className="relative flex items-center justify-center">
+            <div className="border-t border-gray-200 w-full" />
+            <span className="bg-white px-3 text-[10px] font-mono uppercase text-gray-400 font-bold relative z-10">
+              or enter via email token
+            </span>
           </div>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleAuthenticate('email');
-            }}
-            className="space-y-3"
-          >
-            <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider text-[#686661] mb-1.5">
-                Invited Email Address
-              </label>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-gray-700">Invited Recipient Email</label>
               <input
                 type="email"
-                required
                 value={inputEmail}
                 onChange={(e) => setInputEmail(e.target.value)}
-                placeholder="sarah@lumina.io"
-                className="w-full bg-[#FAF8F5] border border-[#E5E2DA] rounded-2xl px-4 py-3 text-xs font-mono text-[#121212] focus:outline-none focus:border-[#C85A32] transition"
+                placeholder="your@company.com"
+                className="w-full px-4 py-3 bg-[#F9F9F9] border border-gray-200 rounded-2xl text-xs font-mono font-medium focus:bg-white focus:border-[#346853] focus:outline-none transition"
               />
             </div>
 
             <button
-              type="submit"
+              type="button"
+              onClick={() => handleAuthenticate('email')}
               disabled={loading}
-              className="w-full py-3.5 px-4 bg-[#121212] hover:bg-[#C85A32] text-white text-xs font-mono uppercase tracking-wider rounded-2xl transition-all shadow-sm active:scale-[0.98] disabled:opacity-50"
+              className="w-full py-3.5 px-4 bg-[#111111] hover:bg-[#346853] text-white rounded-2xl text-xs font-bold tracking-wide uppercase transition shadow-md flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
             >
-              {loading ? 'Verifying Invite...' : 'Accept Invite & Enter Portal →'}
+              {loading ? (
+                <span>Unlocking Staging Workspace...</span>
+              ) : (
+                <>
+                  <span>Access Review Sandbox</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#346853]" />
+                </>
+              )}
             </button>
-          </form>
+          </div>
         </div>
 
-        <div className="pt-4 border-t border-[#E5E2DA] text-center">
-          <p className="text-[11px] font-mono text-[#686661]">
-            Invite token: <code className="text-[#C85A32] font-semibold">{token}</code>
-          </p>
+        <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-400 font-medium">
+          <span>Token: {token.slice(0, 18)}...</span>
+          <span>Encrypted (TLS 1.3)</span>
         </div>
+
       </div>
     </div>
   );

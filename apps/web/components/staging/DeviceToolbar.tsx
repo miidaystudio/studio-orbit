@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { DevicePreset, DeviceConfig } from '@/types/staging';
+import { Laptop, Tablet, Smartphone, Sparkles, Activity, Lock } from 'lucide-react';
 
 export type CreativeOsMode = 'mutations' | 'motion' | 'handoff';
 
@@ -35,18 +36,18 @@ export default function DeviceToolbar({
   onModeChange,
 }: DeviceToolbarProps) {
   return (
-    <div className="h-14 bg-[#08090A] border-b border-[#22252A] px-6 flex items-center justify-between text-[#FFFFFF] z-30 shadow-md font-mono">
+    <div className="h-16 bg-white border-b border-gray-200 px-6 sm:px-8 flex flex-wrap items-center justify-between text-[#111111] z-30 shadow-xs font-sans">
       {/* Left: Device Presets */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1.5 bg-[#111315] border border-[#22252A] p-1 rounded-xl">
+        <div className="flex items-center gap-1 bg-[#F9F9F9] border border-gray-200 p-1 rounded-2xl">
           {(['desktop', 'tablet', 'mobile'] as DevicePreset[]).map((d) => (
             <button
               key={d}
               onClick={() => onDeviceChange(d)}
-              className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition uppercase ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition uppercase ${
                 currentDevice === d
-                  ? 'bg-[#16181B] text-[#CCFF00] border border-[#22252A] shadow-[0_0_8px_rgba(204,255,0,0.2)]'
-                  : 'text-[#828892] hover:text-[#FFFFFF] hover:bg-white/[0.04]'
+                  ? 'bg-[#111111] text-white shadow-xs'
+                  : 'text-gray-500 hover:text-[#111111] hover:bg-gray-100'
               }`}
             >
               {DEVICE_CONFIGS[d].label}
@@ -56,87 +57,56 @@ export default function DeviceToolbar({
       </div>
 
       {/* Center: The 3-Mode Segmented Tab Pill */}
-      <div className="flex items-center bg-[#111315] border border-[#22252A] p-1 rounded-xl shadow-inner">
+      <div className="flex items-center bg-[#F9F9F9] border border-gray-200 p-1 rounded-2xl shadow-inner">
         <button
           type="button"
           onClick={() => onModeChange('mutations')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono uppercase font-bold transition flex items-center gap-1.5 ${
+          className={`px-4 py-1.5 rounded-xl text-xs font-mono uppercase font-bold transition flex items-center gap-1.5 ${
             currentMode === 'mutations'
-              ? 'bg-[#16181B] text-[#CCFF00] border border-[#22252A] shadow-[0_0_8px_rgba(204,255,0,0.2)]'
-              : 'text-[#828892] hover:text-[#FFFFFF] hover:bg-white/[0.04]'
+              ? 'bg-[#346853] text-white shadow-xs'
+              : 'text-gray-600 hover:text-[#111111] hover:bg-white'
           }`}
         >
-          <span className="text-[#CCFF00]">✦</span>
+          <Sparkles className="w-3.5 h-3.5 text-[#346853] dark:text-white" />
           <span>Visual Overrides</span>
         </button>
 
         <button
           type="button"
           onClick={() => onModeChange('motion')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono uppercase font-bold transition flex items-center gap-1.5 ${
+          className={`px-4 py-1.5 rounded-xl text-xs font-mono uppercase font-bold transition flex items-center gap-1.5 ${
             currentMode === 'motion'
-              ? 'bg-[#16181B] text-[#CCFF00] border border-[#22252A] shadow-[0_0_8px_rgba(204,255,0,0.2)]'
-              : 'text-[#828892] hover:text-[#FFFFFF] hover:bg-white/[0.04]'
+              ? 'bg-[#346853] text-white shadow-xs'
+              : 'text-gray-600 hover:text-[#111111] hover:bg-white'
           }`}
         >
-          <span>∿</span>
+          <Activity className="w-3.5 h-3.5 text-[#346853] dark:text-white" />
           <span>Kinetic Motion</span>
         </button>
 
         <button
           type="button"
           onClick={() => onModeChange('handoff')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono uppercase font-bold transition flex items-center gap-1.5 ${
+          className={`px-4 py-1.5 rounded-xl text-xs font-mono uppercase font-bold transition flex items-center gap-1.5 ${
             currentMode === 'handoff'
-              ? 'bg-[#CCFF00] text-black shadow-[0_0_12px_rgba(204,255,0,0.4)]'
-              : 'text-[#828892] hover:text-[#FFFFFF] hover:bg-white/[0.04]'
+              ? 'bg-[#111111] text-white shadow-xs'
+              : 'text-gray-600 hover:text-[#111111] hover:bg-white'
           }`}
         >
-          <span>⬡</span>
+          <Lock className="w-3.5 h-3.5" />
           <span>Handoff Vault</span>
         </button>
       </div>
 
       {/* Right: URL Input & Zoom */}
       <div className="flex items-center gap-3">
-        {/* Editable Staging URL Input */}
-        <div className="max-w-xs hidden xl:flex items-center">
-          <div className="relative flex items-center w-full">
-            <span className="absolute left-3 text-xs font-mono text-[#828892] flex items-center gap-1">
-              <svg className="w-3 h-3 text-[#CCFF00]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-              <span>https://</span>
-            </span>
-            <input
-              type="text"
-              value={stagingUrl.replace(/^https?:\/\//, '')}
-              onChange={(e) => {
-                const clean = e.target.value.trim().replace(/^https?:\/\//, '');
-                onStagingUrlChange(clean ? `https://${clean}` : '');
-              }}
-              placeholder="miidaystudio.online"
-              className="w-full bg-[#111315] border border-[#22252A] rounded-xl pl-24 pr-3 py-1.5 text-xs font-mono text-[#FFFFFF] focus:outline-none focus:border-[#CCFF00]"
-            />
-          </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#F9F9F9] border border-gray-200 text-xs font-mono text-gray-700">
+          <span className="w-2 h-2 rounded-full bg-[#346853] animate-pulse" />
+          <span className="truncate max-w-[200px]">{stagingUrl}</span>
         </div>
 
-        {/* Zoom */}
-        <div className="flex items-center gap-1 bg-[#111315] border border-[#22252A] p-1 rounded-xl">
-          {[0.5, 0.75, 1.0].map((z) => (
-            <button
-              key={z}
-              onClick={() => onZoomChange(z)}
-              className={`px-2 py-1 rounded-lg text-xs font-mono font-bold transition ${
-                currentZoom === z
-                  ? 'bg-[#16181B] text-[#CCFF00] border border-[#22252A]'
-                  : 'text-[#828892] hover:text-[#FFFFFF]'
-              }`}
-            >
-              {Math.round(z * 100)}%
-            </button>
-          ))}
+        <div className="flex items-center gap-1 text-xs font-mono text-gray-500 font-bold">
+          <span>{openPinsCount} PINS ACTIVE</span>
         </div>
       </div>
     </div>
